@@ -14,7 +14,7 @@ subpackages="
 	$pkgname-kernel-shortts:kernel_shortts
 	$pkgname-kernel-longts:kernel_longts
 "
-depends="postmarketos-base u-boot-pine64 uboot-tools mesa-git mesa-git-glapi mesa-git-gl mesa-git-gles mesa-git-egl mesa-git-gbm mesa-git-dri-lima mesa-git-dri-kmsro ofono"
+depends="postmarketos-base u-boot-pine64 uboot-tools mesa-git mesa-git-glapi mesa-git-gl mesa-git-gles mesa-git-egl mesa-git-gbm mesa-git-dri-lima mesa-git-dri-kmsro ofono gpsd atinout"
 makedepends="devicepkg-dev"
 install="$pkgname.post-install"
 source="
@@ -22,6 +22,8 @@ source="
 	uboot-script.cmd
 	weston.ini
 	xorg.conf
+	gpsd_device-hook.sh
+	gpsd.conf
 "
 
 build() {
@@ -33,6 +35,10 @@ package() {
 	devicepkg_package $startdir $pkgname
 	install -D -m644 "$srcdir"/boot.scr \
 		"$pkgdir"/boot/boot.scr
+	install -D -m755 "$srcdir"/gpsd_device-hook.sh \
+		"$pkgdir"/etc/gpsd/device-hook
+	install -D -m644 "$srcdir"/gpsd.conf \
+		"$pkgdir"/etc/conf.d/gpsd
 }
 
 x11() {
@@ -73,4 +79,6 @@ kernel_longts() {
 sha512sums="61eb184cee1cf79cda4fd5e4cedaa830b140e1445fd8a48867b2250961d6cbb5c9f0bc443b73a15663e5ddc015d51fbf92eab19e4153bf66473ff08f634cfefe  deviceinfo
 eda61d8097896a618593e07bd03518236692b4c580182ce2e34c5e1040125e1004088475f1d484e7a4918d6f1d395a9ab121cfca202a887cdfaf9c0363dbb40b  uboot-script.cmd
 c4c57d1627dd451213e1ef20d89de9266cd4edcc2d33a69aa9a1f13e16d9f9742036b69dc149fd910d7213f7525c41eb79576d4457bc85cc96eba0d986382d27  weston.ini
-f86ef35730b89bcc8160c08db7a7fcd0970adf60c0b77af68bac397de49c0d1783e6b8db1762380c9bf874aff2d030c6f44ecb75c803d69e79ede11376409369  xorg.conf"
+f86ef35730b89bcc8160c08db7a7fcd0970adf60c0b77af68bac397de49c0d1783e6b8db1762380c9bf874aff2d030c6f44ecb75c803d69e79ede11376409369  xorg.conf
+b4ea8024d00302ef9d026a9c8bc6f8bfcb6c514f9352cdd570a7dd41eab1434f5c1c99f2207967a26d8e90f6e841e9eff244f7e0ce50959abd40604cb1e26835  gpsd_device-hook.sh
+99c011b4fc5aea66d8512d49b434105800b3cff22ce049726227e684b873648fad8a122675230c50d367105727874719ea366cb11ee347130d5a8d693e50ce2d  gpsd.conf"
