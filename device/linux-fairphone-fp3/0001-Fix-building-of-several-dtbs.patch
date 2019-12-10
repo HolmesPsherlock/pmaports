@@ -1,0 +1,114 @@
+From 6ba4e2c78f77396ee82c19413c519f3936247a5a Mon Sep 17 00:00:00 2001
+From: Luca Weiss <luca@z3ntu.xyz>
+Date: Tue, 10 Dec 2019 17:18:59 +0100
+Subject: [PATCH 1/3] Fix building of several dtbs
+
+FP3 changes have commented out several nodes in the msm8953.dtsi files
+while they are still used in other .dts and .dtsi files. Comment them
+out there as well to get it building.
+---
+ arch/arm64/boot/dts/qcom/apq8053-lat-concam.dtsi      | 2 +-
+ arch/arm64/boot/dts/qcom/apq8053-lite-dragon-v2.0.dts | 6 +++---
+ arch/arm64/boot/dts/qcom/apq8053-lite-dragon.dtsi     | 4 ++--
+ arch/arm64/boot/dts/qcom/msm8953-ext-codec-mtp.dts    | 4 ++--
+ arch/arm64/boot/dts/qcom/sdm632-ext-audio-mtp.dtsi    | 4 ++--
+ arch/arm64/boot/dts/qcom/sdm632-rumi.dtsi             | 4 ++--
+ 6 files changed, 12 insertions(+), 12 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/qcom/apq8053-lat-concam.dtsi b/arch/arm64/boot/dts/qcom/apq8053-lat-concam.dtsi
+index b359db31c922..d52826bb19ff 100644
+--- a/arch/arm64/boot/dts/qcom/apq8053-lat-concam.dtsi
++++ b/arch/arm64/boot/dts/qcom/apq8053-lat-concam.dtsi
+@@ -44,7 +44,7 @@
+ 		i2c5 = &i2c_5;
+ 		i2c7 = &i2c_7;
+ 		i2c8 = &i2c_8;
+-		spi3 = &spi_3;
++//		spi3 = &spi_3;
+ 	};
+ 
+ };
+diff --git a/arch/arm64/boot/dts/qcom/apq8053-lite-dragon-v2.0.dts b/arch/arm64/boot/dts/qcom/apq8053-lite-dragon-v2.0.dts
+index 9961a97234cf..e83e7e07bb9a 100644
+--- a/arch/arm64/boot/dts/qcom/apq8053-lite-dragon-v2.0.dts
++++ b/arch/arm64/boot/dts/qcom/apq8053-lite-dragon-v2.0.dts
+@@ -26,7 +26,7 @@
+ 	status = "okay";
+ };
+ 
+-&blsp2_uart1 { /* UART6 */
+-	status = "okay";
+-};
++//&blsp2_uart1 { /* UART6 */
++//	status = "okay";
++//};
+ 
+diff --git a/arch/arm64/boot/dts/qcom/apq8053-lite-dragon.dtsi b/arch/arm64/boot/dts/qcom/apq8053-lite-dragon.dtsi
+index 3f0bc28ff4d7..497be0de84f3 100644
+--- a/arch/arm64/boot/dts/qcom/apq8053-lite-dragon.dtsi
++++ b/arch/arm64/boot/dts/qcom/apq8053-lite-dragon.dtsi
+@@ -206,9 +206,9 @@
+ 	/delete-property/ qcom,msm-vdd-wsa-switch-voltage;
+ 	/delete-property/ qcom,msm-vdd-wsa-switch-current;
+ };
+-&spi_3 {
++/*&spi_3 {
+ 	status = "disabled";
+-};
++};*/
+ 
+ &i2c_1 {
+ 	status = "okay";
+diff --git a/arch/arm64/boot/dts/qcom/msm8953-ext-codec-mtp.dts b/arch/arm64/boot/dts/qcom/msm8953-ext-codec-mtp.dts
+index e3a5b4a2a1ac..27b74d0d7435 100644
+--- a/arch/arm64/boot/dts/qcom/msm8953-ext-codec-mtp.dts
++++ b/arch/arm64/boot/dts/qcom/msm8953-ext-codec-mtp.dts
+@@ -81,9 +81,9 @@
+ 	status = "okay";
+ };
+ 
+-&cdc_us_euro_sw {
++/*&cdc_us_euro_sw {
+ 	status = "okay";
+-};
++};*/
+ 
+ &cdc_quin_mi2s_gpios {
+ 	status = "okay";
+diff --git a/arch/arm64/boot/dts/qcom/sdm632-ext-audio-mtp.dtsi b/arch/arm64/boot/dts/qcom/sdm632-ext-audio-mtp.dtsi
+index b34e3d8db2ab..0c12e15b5d03 100644
+--- a/arch/arm64/boot/dts/qcom/sdm632-ext-audio-mtp.dtsi
++++ b/arch/arm64/boot/dts/qcom/sdm632-ext-audio-mtp.dtsi
+@@ -87,9 +87,9 @@
+ 	qcom,cdc-vdd-px-current = <10000>;
+ };
+ 
+-&cdc_us_euro_sw {
++/*&cdc_us_euro_sw {
+ 	status = "okay";
+-};
++};*/
+ 
+ &cdc_quin_mi2s_gpios {
+ 	status = "okay";
+diff --git a/arch/arm64/boot/dts/qcom/sdm632-rumi.dtsi b/arch/arm64/boot/dts/qcom/sdm632-rumi.dtsi
+index 3ba8a4d8ff28..ddd9c0194c18 100644
+--- a/arch/arm64/boot/dts/qcom/sdm632-rumi.dtsi
++++ b/arch/arm64/boot/dts/qcom/sdm632-rumi.dtsi
+@@ -11,11 +11,11 @@
+  * GNU General Public License for more details.
+  */
+ 
+-&blsp1_serial1 {
++/*&blsp1_serial1 {
+ 	status = "ok";
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&uart1_console_active>;
+-};
++};*/
+ 
+ &wdog {
+ 	status = "disabled";
+-- 
+2.24.0
+

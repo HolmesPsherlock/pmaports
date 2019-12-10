@@ -1,0 +1,145 @@
+From e166a406645c439ce87f02a2ce23e5e79999264c Mon Sep 17 00:00:00 2001
+From: Luca Weiss <luca@z3ntu.xyz>
+Date: Tue, 10 Dec 2019 17:43:55 +0100
+Subject: [PATCH 3/3] Fix include paths
+
+---
+ drivers/bluetooth/btfm_slim.c                              | 4 ++--
+ drivers/bluetooth/btfm_slim_codec.c                        | 2 +-
+ drivers/bluetooth/btfm_slim_wcn3990.c                      | 4 ++--
+ drivers/bluetooth/btfm_slim_wcn3990.h                      | 2 +-
+ drivers/gpu/msm/kgsl_events.c                              | 2 +-
+ drivers/media/platform/msm/camera_v2/common/cam_smmu_api.c | 2 +-
+ drivers/media/platform/msm/camera_v2/sensor/msm_sensor.h   | 6 +++---
+ drivers/usb/gadget/configfs.c                              | 2 +-
+ include/trace/events/msm_cam.h                             | 2 +-
+ 9 files changed, 13 insertions(+), 13 deletions(-)
+
+diff --git a/drivers/bluetooth/btfm_slim.c b/drivers/bluetooth/btfm_slim.c
+index 92ea0135d363..baab63ae4be4 100644
+--- a/drivers/bluetooth/btfm_slim.c
++++ b/drivers/bluetooth/btfm_slim.c
+@@ -23,8 +23,8 @@
+ #include <sound/soc.h>
+ #include <sound/soc-dapm.h>
+ #include <sound/tlv.h>
+-#include <btfm_slim.h>
+-#include <btfm_slim_wcn3990.h>
++#include "btfm_slim.h"
++#include "btfm_slim_wcn3990.h"
+ #include <linux/bluetooth-power.h>
+ 
+ int btfm_slim_write(struct btfmslim *btfmslim,
+diff --git a/drivers/bluetooth/btfm_slim_codec.c b/drivers/bluetooth/btfm_slim_codec.c
+index 4c6986a536eb..35c1c74fb84a 100644
+--- a/drivers/bluetooth/btfm_slim_codec.c
++++ b/drivers/bluetooth/btfm_slim_codec.c
+@@ -24,7 +24,7 @@
+ #include <sound/soc.h>
+ #include <sound/soc-dapm.h>
+ #include <sound/tlv.h>
+-#include <btfm_slim.h>
++#include "btfm_slim.h"
+ 
+ static int bt_soc_enable_status;
+ int btfm_feedback_ch_setting;
+diff --git a/drivers/bluetooth/btfm_slim_wcn3990.c b/drivers/bluetooth/btfm_slim_wcn3990.c
+index 661518935086..511c0b64385b 100644
+--- a/drivers/bluetooth/btfm_slim_wcn3990.c
++++ b/drivers/bluetooth/btfm_slim_wcn3990.c
+@@ -10,8 +10,8 @@
+  * GNU General Public License for more details.
+  */
+ #include <linux/slimbus/slimbus.h>
+-#include <btfm_slim.h>
+-#include <btfm_slim_wcn3990.h>
++#include "btfm_slim.h"
++#include "btfm_slim_wcn3990.h"
+ 
+ /* WCN3990 Port assignment */
+ struct btfmslim_ch wcn3990_rxport[] = {
+diff --git a/drivers/bluetooth/btfm_slim_wcn3990.h b/drivers/bluetooth/btfm_slim_wcn3990.h
+index b2723ff96103..f26600714e1e 100644
+--- a/drivers/bluetooth/btfm_slim_wcn3990.h
++++ b/drivers/bluetooth/btfm_slim_wcn3990.h
+@@ -12,7 +12,7 @@
+ #ifndef BTFM_SLIM_WCN3990_H
+ #define BTFM_SLIM_WCN3990_H
+ //#ifdef CONFIG_BTFM_SLIM_WCN3990
+-#include <btfm_slim.h>
++#include "btfm_slim.h"
+ 
+ /* Registers Address */
+ #define CHRK_SB_COMP_TEST			0x00000000
+diff --git a/drivers/gpu/msm/kgsl_events.c b/drivers/gpu/msm/kgsl_events.c
+index 759a96601170..2effdc347045 100644
+--- a/drivers/gpu/msm/kgsl_events.c
++++ b/drivers/gpu/msm/kgsl_events.c
+@@ -15,7 +15,7 @@
+ #include <linux/list.h>
+ #include <linux/workqueue.h>
+ #include <linux/debugfs.h>
+-#include <kgsl_device.h>
++#include "kgsl_device.h"
+ 
+ #include "kgsl_debugfs.h"
+ #include "kgsl_trace.h"
+diff --git a/drivers/media/platform/msm/camera_v2/common/cam_smmu_api.c b/drivers/media/platform/msm/camera_v2/common/cam_smmu_api.c
+index 1d7430919656..fc5d23004cba 100644
+--- a/drivers/media/platform/msm/camera_v2/common/cam_smmu_api.c
++++ b/drivers/media/platform/msm/camera_v2/common/cam_smmu_api.c
+@@ -25,7 +25,7 @@
+ #include <linux/sizes.h>
+ #include <soc/qcom/scm.h>
+ #include <soc/qcom/secure_buffer.h>
+-#include <msm_camera_tz_util.h>
++#include "msm_camera_tz_util.h"
+ #include "cam_smmu_api.h"
+ 
+ #define SCRATCH_ALLOC_START SZ_128K
+diff --git a/drivers/media/platform/msm/camera_v2/sensor/msm_sensor.h b/drivers/media/platform/msm/camera_v2/sensor/msm_sensor.h
+index 753e85a32608..9c2ba98cb859 100644
+--- a/drivers/media/platform/msm/camera_v2/sensor/msm_sensor.h
++++ b/drivers/media/platform/msm/camera_v2/sensor/msm_sensor.h
+@@ -31,9 +31,9 @@
+ #include <media/msm_cam_sensor.h>
+ #include <media/v4l2-subdev.h>
+ #include <media/v4l2-ioctl.h>
+-#include "msm_camera_i2c.h"
+-#include "msm_camera_dt_util.h"
+-#include "msm_sd.h"
++#include "io/msm_camera_i2c.h"
++#include "io/msm_camera_dt_util.h"
++#include "../msm_sd.h"
+ 
+ #define DEFINE_MSM_MUTEX(mutexname) \
+ 	static struct mutex mutexname = __MUTEX_INITIALIZER(mutexname)
+diff --git a/drivers/usb/gadget/configfs.c b/drivers/usb/gadget/configfs.c
+index 14c18f3a1108..b7ecaeb56c48 100644
+--- a/drivers/usb/gadget/configfs.c
++++ b/drivers/usb/gadget/configfs.c
+@@ -15,7 +15,7 @@
+ #include <linux/usb/ch9.h>
+ 
+ #ifdef CONFIG_USB_F_NCM
+-#include <function/u_ncm.h>
++#include "function/u_ncm.h"
+ #endif
+ 
+ #ifdef CONFIG_USB_CONFIGFS_F_ACC
+diff --git a/include/trace/events/msm_cam.h b/include/trace/events/msm_cam.h
+index 3fc1a299e815..bff8aab02274 100644
+--- a/include/trace/events/msm_cam.h
++++ b/include/trace/events/msm_cam.h
+@@ -16,7 +16,7 @@
+ #if !defined(_TRACE_MSM_VFE_H) || defined(TRACE_HEADER_MULTI_READ)
+ #define _TRACE_MSM_VFE_H
+ 
+-#include "msm_isp.h"
++#include "../../../drivers/media/platform/msm/camera_v2/isp/msm_isp.h"
+ #include <linux/types.h>
+ #include <linux/tracepoint.h>
+ 
+-- 
+2.24.0
+

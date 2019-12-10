@@ -1,0 +1,68 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm64/configs/(CHANGEME!)
+
+pkgname="linux-fairphone-fp3"
+pkgver=4.9.112
+pkgrel=0
+pkgdesc="Fairphone 3 kernel fork"
+arch="aarch64"
+_carch="arm64"
+_flavor="fairphone-fp3"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev openssl-dev"
+
+# Compiler: latest GCC from Alpine
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+# Source
+_repository="android_kernel_fairphone_sdm632"
+_commit="c97c17e2a9f60efa13757067c505add89d734616"
+_config="config-${_flavor}.${arch}"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/FairphoneMirrors/${_repository}/archive/${_commit}.tar.gz
+	$_config
+	0001-Fix-building-of-several-dtbs.patch
+	0002-Fix-TRACE_INCLUDE_PATH-defines.patch
+	0003-Fix-include-paths.patch
+"
+builddir="$srcdir/${_repository}-${_commit}"
+
+prepare() {
+	default_prepare
+	downstreamkernel_prepare "$srcdir" "$builddir" "$_config" "$_carch" "$HOSTCC"
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+}
+
+sha512sums="5b3bd7afae46fe218c997c1e433e093f1cec65c18cce20a7dfa485ec81efa687d6b328e6386e7d820d418d30b7eb00baf568e17b7bb47ce09edf9574faec6810  linux-fairphone-fp3-c97c17e2a9f60efa13757067c505add89d734616.tar.gz
+ee57e96d2fe8934fd97aca942e5749bc261b63ef6119dc95f92d97fc2fb1b7a7870d893934ceb6238d8831de3b85f58a6e9be734a7cd1ceb730b3478088ad1a2  config-fairphone-fp3.aarch64
+8727fa24793d8a5a8a17de4d5b3e94dfa2f557634bb41a63ee5b93c86699f592286ad1befcef87a23b5a848602617eef3c46aa08b5f0367efa2d6ee6dc12065b  0001-Fix-building-of-several-dtbs.patch
+c9a8787d283c270db03196d5817f03548bbbef6d5ebd231b0fada21fcb32871f2d014b3e3aff7f615f3989983aa8cc33b902c07366c500006aca1fdf4b9dd712  0002-Fix-TRACE_INCLUDE_PATH-defines.patch
+88a760449f209b4556a733f22596ebb50a2166358664eabee3916212598255d6cf0c1d7d14b5d766e9e56d6ed7b5646eb0819742c24b1858eab86336ada8198b  0003-Fix-include-paths.patch"

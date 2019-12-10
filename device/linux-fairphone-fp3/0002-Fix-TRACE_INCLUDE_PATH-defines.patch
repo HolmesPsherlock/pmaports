@@ -1,0 +1,63 @@
+From 78f625634e6cba326e09d7fcaa2d78ffa59be509 Mon Sep 17 00:00:00 2001
+From: Luca Weiss <luca@z3ntu.xyz>
+Date: Tue, 10 Dec 2019 17:30:29 +0100
+Subject: [PATCH 2/3] Fix TRACE_INCLUDE_PATH defines
+
+---
+ drivers/gpu/msm/adreno_trace.h                         | 2 +-
+ drivers/gpu/msm/kgsl_trace.h                           | 2 +-
+ drivers/platform/msm/ipa/ipa_clients/rndis_ipa_trace.h | 2 +-
+ drivers/platform/msm/ipa/ipa_v2/ipa_trace.h            | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/gpu/msm/adreno_trace.h b/drivers/gpu/msm/adreno_trace.h
+index de028fad6a02..7774ca9ef1b9 100644
+--- a/drivers/gpu/msm/adreno_trace.h
++++ b/drivers/gpu/msm/adreno_trace.h
+@@ -17,7 +17,7 @@
+ #undef TRACE_SYSTEM
+ #define TRACE_SYSTEM kgsl
+ #undef TRACE_INCLUDE_PATH
+-#define TRACE_INCLUDE_PATH .
++#define TRACE_INCLUDE_PATH ../../drivers/gpu/msm
+ #undef TRACE_INCLUDE_FILE
+ #define TRACE_INCLUDE_FILE adreno_trace
+ 
+diff --git a/drivers/gpu/msm/kgsl_trace.h b/drivers/gpu/msm/kgsl_trace.h
+index c7690a14abcd..919fd0454312 100644
+--- a/drivers/gpu/msm/kgsl_trace.h
++++ b/drivers/gpu/msm/kgsl_trace.h
+@@ -17,7 +17,7 @@
+ #undef TRACE_SYSTEM
+ #define TRACE_SYSTEM kgsl
+ #undef TRACE_INCLUDE_PATH
+-#define TRACE_INCLUDE_PATH .
++#define TRACE_INCLUDE_PATH ../../drivers/gpu/msm
+ #undef TRACE_INCLUDE_FILE
+ #define TRACE_INCLUDE_FILE kgsl_trace
+ 
+diff --git a/drivers/platform/msm/ipa/ipa_clients/rndis_ipa_trace.h b/drivers/platform/msm/ipa/ipa_clients/rndis_ipa_trace.h
+index bf66c1e20b1c..aa1b34a8446f 100644
+--- a/drivers/platform/msm/ipa/ipa_clients/rndis_ipa_trace.h
++++ b/drivers/platform/msm/ipa/ipa_clients/rndis_ipa_trace.h
+@@ -77,5 +77,5 @@ TRACE_EVENT(
+ 
+ /* This part must be outside protection */
+ #undef TRACE_INCLUDE_PATH
+-#define TRACE_INCLUDE_PATH .
++#define TRACE_INCLUDE_PATH ../../drivers/platform/msm/ipa/ipa_clients/
+ #include <trace/define_trace.h>
+diff --git a/drivers/platform/msm/ipa/ipa_v2/ipa_trace.h b/drivers/platform/msm/ipa/ipa_v2/ipa_trace.h
+index a03a49a33f97..218d3e965943 100644
+--- a/drivers/platform/msm/ipa/ipa_v2/ipa_trace.h
++++ b/drivers/platform/msm/ipa/ipa_v2/ipa_trace.h
+@@ -148,5 +148,5 @@ TRACE_EVENT(
+ 
+ /* This part must be outside protection */
+ #undef TRACE_INCLUDE_PATH
+-#define TRACE_INCLUDE_PATH .
++#define TRACE_INCLUDE_PATH ../../drivers/platform/msm/ipa/ipa_v2/
+ #include <trace/define_trace.h>
+-- 
+2.24.0
+

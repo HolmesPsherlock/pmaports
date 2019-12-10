@@ -1,0 +1,23 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-fairphone-fp3"
+pkgdesc="Fairphone 3"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base linux-fairphone-fp3 mkbootimg mesa-dri-swrast"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+
+sha512sums="b723db8e7bee5f899ed3cc9f8c05d029bc0676778839a3349f80ba61bb8d6f85f105dca951c59b64a124af5ff501bd8fbbe80b0bfd90a07bda532c697d3bbe79  deviceinfo"
