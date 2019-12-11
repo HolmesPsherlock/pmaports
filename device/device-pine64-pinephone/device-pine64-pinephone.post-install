@@ -1,3 +1,5 @@
 #!/bin/sh
 
 rc-update add ofono default
+rc-update add gpsd default
+rc-update add gpsd_pinephone default

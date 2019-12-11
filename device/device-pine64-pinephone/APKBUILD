@@ -2,7 +2,7 @@
 pkgname="device-pine64-pinephone"
 pkgdesc="PINE64 PinePhone"
 pkgver=0.1
-pkgrel=14
+pkgrel=15
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -12,7 +12,7 @@ subpackages="
 	$pkgname-x11
 	$pkgname-nonfree-firmware:nonfree_firmware
 "
-depends="postmarketos-base u-boot-pine64 uboot-tools mesa-git mesa-git-glapi mesa-git-gl mesa-git-gles mesa-git-egl mesa-git-gbm mesa-git-dri-lima mesa-git-dri-kmsro linux-postmarketos-allwinner ofono"
+depends="postmarketos-base u-boot-pine64 uboot-tools mesa-git mesa-git-glapi mesa-git-gl mesa-git-gles mesa-git-egl mesa-git-gbm mesa-git-dri-lima mesa-git-dri-kmsro linux-postmarketos-allwinner ofono gpsd atinout"
 makedepends="devicepkg-dev"
 install="$pkgname.post-install"
 source="
@@ -21,6 +21,9 @@ source="
 	weston.ini
 	xorg.conf
 	hwtest.ini
+	gpsd_pinephone.initd
+	gpsd_device-hook.sh
+	90-modem-eg25.rules
 	ucm/sun50i-a64-audio.conf
 	ucm/HiFi
 "
@@ -36,6 +39,14 @@ package() {
 		"$pkgdir"/boot/boot.scr
 	install -D -m644 "$srcdir"/hwtest.ini \
 		"$pkgdir"/usr/share/hwtest.ini
+
+	# GPS
+	install -D -m755 "$srcdir"/gpsd_pinephone.initd \
+		"$pkgdir"/etc/init.d/gpsd_pinephone
+	install -D -m755 "$srcdir"/gpsd_device-hook.sh \
+		"$pkgdir"/etc/gpsd/device-hook
+	install -D -m644 "$srcdir"/90-modem-eg25.rules \
+		"$pkgdir"/usr/lib/udev/rules.d/90-modem-eg25.rules
 
 	# Alsa usecase manager config
 	install -D -m644 "$srcdir"/sun50i-a64-audio.conf \
@@ -72,5 +83,8 @@ f7271c2b231e3417bd8729a25f19ef4ce149c7afd7d64b2b16a4f131e281e3f43687055210179ae1
 c4c57d1627dd451213e1ef20d89de9266cd4edcc2d33a69aa9a1f13e16d9f9742036b69dc149fd910d7213f7525c41eb79576d4457bc85cc96eba0d986382d27  weston.ini
 f86ef35730b89bcc8160c08db7a7fcd0970adf60c0b77af68bac397de49c0d1783e6b8db1762380c9bf874aff2d030c6f44ecb75c803d69e79ede11376409369  xorg.conf
 3dd6d612c381cb0002049d1974d8fb5aa5a53a1eb4d6bcbf62eb2ad52cfdc45f0f6ad24a699716d3513b0371aa1316f25dc72afc10d7176cc3b99d0965c3f030  hwtest.ini
+1017fc3f325227da58c77abdc59e9735288d91a7ccc63ec784fe0241c523786b617a11ce8045dab2a74ca12a7dd70aaa334af91836418db1e96a3266fecaa4fd  gpsd_pinephone.initd
+ccbc83b84b5028bc2c8e526759004ce71b50b2675ecffee98f5676c70a3332197a231ff9d2fd46444dd3c0a637ec08ce6125b18240fe6bfc13f624a15192e648  gpsd_device-hook.sh
+aa0b7191548e89ddfc6cf5b1f637c7ee7ab4c2025cbfc6328e7e482e5b179ea072779ca332a18094e3d424708b923c2334210591fc369831426992f540c07abc  90-modem-eg25.rules
 775b7f7612102fc8ff12b2ffc8a7d479bfcf0ab054e331e4bd7873264cc63cbcbf5073d8dc2a80ef0f36226ad5c8b435396801c7d712161ff80ef036ecdc29b6  sun50i-a64-audio.conf
 8018532bd68b4682455690922560933ddb0dd1dae6a3b2f8611ae89ad09e37ea3c5a17cb9fd39ac165e4e598e0eb9ebbd1395f5908020108ee8a301aae516c3c  HiFi"
