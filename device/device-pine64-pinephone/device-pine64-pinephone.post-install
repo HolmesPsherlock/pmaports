@@ -1,3 +1,6 @@
 #!/bin/sh
 
+sed -i 's|#Name = BlueZ|Name = PINE64 PinePhone|' /etc/bluetooth/main.conf
+
+rc-update add bluetooth default
 rc-update add ofono default
