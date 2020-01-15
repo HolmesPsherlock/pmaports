@@ -1,0 +1,96 @@
+_flavor=postmarketos-rockchip
+_config="config-$_flavor.$CARCH"
+
+pkgname=linux-${_flavor}
+
+pkgver=5.5.0_git20200108
+pkgrel=0
+
+arch="aarch64"
+pkgdesc="Kernel fork with Pinebook Pro and Rockpro64 patches"
+url="https://github.com/mrfixit2001/mainline-kernel"
+makedepends="devicepkg-dev perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev openssl-dev file bison flex rsync"
+options="!strip !check !tracedeps"
+_commit="f28401c31807b1ae5a60094f7230b059003f0438"
+source="
+	${pkgname}-${_commit}.tar.gz::https://gitlab.manjaro.org/tsys/linux-pinebook-pro/-/archive/$_commit/linux-pinebook-pro-$_commit.tar.gz
+	config-${_flavor}.aarch64
+"
+
+subpackages="$pkgname-dev"
+
+license="GPL2"
+_abi_release=$_pkgver
+_carch=$CARCH
+case "$_carch" in
+aarch64*) _carch="arm64" ;;
+arm*) _carch="arm" ;;
+ppc*) _carch="powerpc" ;;
+s390*) _carch="s390" ;;
+esac
+
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+builddir="$srcdir/linux-pinebook-pro-$_commit"
+
+prepare() {
+	default_prepare
+
+	REPLACE_GCCH=0 \
+		downstreamkernel_prepare "$srcdir" "$builddir" "$_config" "$_carch" "$HOSTCC"
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-${_flavor}" \
+		CFLAGS_MODULE=-fno-pic
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+
+	cd "$builddir"
+	local _install
+	case "$CARCH" in
+	aarch64*|arm*)	_install="modules_install dtbs_install" ;;
+	*)		_install="modules_install" ;;
+	esac
+
+	make -j1 $_install \
+		ARCH="$_carch" \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
+}
+
+dev() {
+	provides="linux-headers"
+	replaces="linux-headers"
+
+	cd $builddir
+
+	# https://github.com/torvalds/linux/blob/master/Documentation/kbuild/headers_install.rst
+	make -j1 headers_install \
+		ARCH="$_carch" \
+		INSTALL_HDR_PATH="$subpkgdir"/usr
+}
+
+sha512sums="94937d304ec40bc7462fb5ceb66c0f6e8e7d987e496a93b3ab8c71713ae5bf62f64614255de3449dd3ce5d232d643806051c1d23886866051ed3586b21b47a9a  linux-postmarketos-rockchip-f28401c31807b1ae5a60094f7230b059003f0438.tar.gz
+53d0615743a4bc2744cd65a621bf14aec18b818b4e9c6ce75a68686c1025865ce3117493f8c62a49c4af42408f887a108dcd77c313bf1bb4160e0757409bae42  config-postmarketos-rockchip.aarch64"

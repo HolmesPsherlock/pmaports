@@ -1,0 +1,44 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-pine64-pinebookpro"
+pkgdesc="PINE64 Pinebook Pro"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base linux-postmarketos-rockchip mesa-dri-panfrost mesa-git mesa-git-glapi mesa-git-gl mesa-git-egl mesa-git-dri-panfrost mesa-git-dri-kmsro mesa-git-gbm mesa-git-gles"
+makedepends="devicepkg-dev"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+install="$pkgname.post-install"
+source="
+	deviceinfo
+	extlinux.conf
+	10-usb-kbd.hwdb
+	asound.state
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+	install -D -m644 "$srcdir"/extlinux.conf \
+		"$pkgdir"/boot/extlinux/extlinux.conf
+	install -D -m644 "$srcdir"/10-usb-kbd.hwdb \
+		"$pkgdir"/etc/udev/hwdb.d/10-usb-kbd.hwdb
+	install -D -m644 "$srcdir"/asound.state \
+		"$pkgdir"/var/lib/alsa/asound.state
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi, Bluetooth and video-out firmware"
+	depends="firmware-pine64-pinebookpro"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="74d750f5910ea8648791cc25deec062c48c2033927a83a28056fe0c73a33ffa5cd1e8e78a8093f6e0bf029d4ea1ba6323c6f91508ab7e0eb6509884bbdabde23  deviceinfo
+cc9f2f09e70fd92aa940578ae20d06ccad613306f6d696a85b3628d2e154600401fd894385454f2fb67347d6464a64f7fe504ee0e426123644487a268b0931f8  extlinux.conf
+13a53bd00dd0afb8908b0bc98d388d5f37ab1df334a3ff0f56928f0f4e4e658253c78f2c368e31979cf8b4ebcc519d0efe0e2255979c00198b82a8eb37d93dd0  10-usb-kbd.hwdb
+571ee8deb25a4e0ac15da525649e9a7606ae4d37d2cd5f380ad29f571fef2c3c6363c4ef1beff6bc68262dddac8bbc2f6eecfbbd284561e5aa61edb166c99507  asound.state"
