@@ -1,0 +1,22 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-xiaomi-sagit"
+pkgdesc="Xiaomi Mi 6"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base linux-xiaomi-sagit mkbootimg mesa-dri-swrast msm-fb-refresher"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="1b9f0d667b32d4bd31af386cb3dcf6ea0290bbec2f9dcec2e6a1b9ae47ee91beba5884e6189b868b0185f4a6898521299c1ea90949dfcdb74c6706e59a2804e9  deviceinfo"

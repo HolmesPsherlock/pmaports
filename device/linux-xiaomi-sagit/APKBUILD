@@ -1,0 +1,74 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm64/configs/sagit_defconfig
+
+pkgname="linux-xiaomi-sagit"
+pkgver=4.4.205
+pkgrel=0
+pkgdesc="Xiaomi Mi 6 kernel fork"
+arch="aarch64"
+_carch="arm64"
+_flavor="xiaomi-sagit"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps"
+makedepends="gcc6 perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev"
+
+# Compiler: GCC 6 (doesn't boot when compiled with newer versions)
+if [ "${CC:0:5}" != "gcc6-" ]; then
+	CC="gcc6-$CC"
+	HOSTCC="gcc6-gcc"
+	CROSS_COMPILE="gcc6-$CROSS_COMPILE"
+fi
+
+# Source
+_repository="android_kernel_xiaomi_msm8998"
+_commit="0f5fdfb730fd5fe1b8cbf5b98b622cb3e8c0351d"
+_config="config-${_flavor}.${arch}"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/${_repository}/archive/${_commit}.tar.gz
+	$_config
+	03_fix_rndis_ipa_trace_header_not_found.patch
+	fix-build.patch
+	0004-disable-interfering-bt_power-rfkill.patch
+	fix-virtual-terminal.patch
+"
+builddir="$srcdir/${_repository}-${_commit}"
+
+prepare() {
+	default_prepare
+	downstreamkernel_prepare "$srcdir" "$builddir" "$_config" "$_carch" "$HOSTCC"
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+}
+
+
+sha512sums="d22c2f8031c6e53082619b28a796c583427d38efe25b1fcf58a3b15e19dcd57d3db71160725c1287f9905750107ddc2b5d09692444360e629aa8ff0da34f4bdd  linux-xiaomi-sagit-0f5fdfb730fd5fe1b8cbf5b98b622cb3e8c0351d.tar.gz
+7806295239fc9476e937edb8ea789605a2eedac67bb989f823b2fbadcf19cd13fc2dc2dceac7c5c6593d8e4a42ced27d53559cc9d9c4b26e69013a505868d0c1  config-xiaomi-sagit.aarch64
+9c549714f03c7a7666e8aa7508a48cfdccab7cf3e97fb59c4df8fa97f75492365926f82c4a677c50780d68d4905504dcccbdd6de6344bd8d4b88b2331933ed46  03_fix_rndis_ipa_trace_header_not_found.patch
+36e0d0299cad47a514326a7129bcd85e4cb9171315ffa2080a82c5f46faff122ea2f7e291dedd74b15eff121e3176e0b1b0de8869a0d731d53c755b1ca8525a8  fix-build.patch
+1afb3a4e6af51d073a6e9d3352b0b5ab2918018d2ada972e72209eba3fc5b98926e691ff0d641a9d03a4ce8030e6ed15dff54b3720c751ab7134db53bfd2e685  0004-disable-interfering-bt_power-rfkill.patch
+c104bbbb5e3de71449042c0b47b971c53d7532bd506bc89424a7221fbcddf1445680714a886c7b9df4bbbb59b9791df128f7e940cd13dafe4023eb6b8fb8284b  fix-virtual-terminal.patch"
