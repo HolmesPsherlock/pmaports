@@ -19,4 +19,4 @@ package() {
 	devicepkg_package $startdir $pkgname
 }
 
-sha512sums="1b9f0d667b32d4bd31af386cb3dcf6ea0290bbec2f9dcec2e6a1b9ae47ee91beba5884e6189b868b0185f4a6898521299c1ea90949dfcdb74c6706e59a2804e9  deviceinfo"
+sha512sums="16addfaabe5b743de5be0484dd6e99d0027cda88f97a94e0bd2f938f6e242cfedca16e704314b18b386ff368cf5bb14af5a95680fc916aac1df46b3787bebf8b  deviceinfo"
